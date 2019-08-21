@@ -15,6 +15,17 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
 
-
+    @IBOutlet weak var playerOneName: UITextField!
+    
+    @IBOutlet weak var playerTwoName: UITextField!
+    @IBAction func didGameBegin(_ sender: Any) {
+        // Check that both players have entered their names
+        if playerOneName.text != "" && playerTwoName.text != "" {
+            performSegue(withIdentifier: "HomeToGameBoard", sender: self)
+        }
+        else {
+            print("Please enter both player names before beginning")
+        }
+    }
 }
 
