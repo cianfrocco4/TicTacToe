@@ -12,21 +12,52 @@ class GameOverVC: UIViewController {
 
     @IBOutlet weak var gameOverLabel: UILabel!
     
+    var msWinner = ""
+    var msLoser = ""
+    var gameManager = GameManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        var lsLabelText = ""
+        if msWinner == "" {
+            lsLabelText = "Draw!"
+            self.msWinner = gameManager.playerOneName
+            self.msLoser = gameManager.playerTwoName
+        }
+        else {
+            lsLabelText = "\(msWinner) wins!!!\n\(msWinner) beat \(msLoser)"
+        }
+        gameOverLabel.text = lsLabelText
+        gameOverLabel.sizeToFit()
         // Do any additional setup after loading the view.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @IBAction func playAgain(_ sender: UIButton) {
+        performSegue(withIdentifier: "EndToGameBoard", sender: self)
     }
-    */
-
+    
+    @IBAction func exitPressed(_ sender: UIButton) {
+        performSegue(withIdentifier: "EndToHome", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case "EndToGameBoard":
+            let destinationVC = segue.destination as? GameBoardVC
+            if gameManager.getTurn() == GameManager.Turn.playerOne {
+                destinationVC?.playerOneName = self.msLoser
+                destinationVC?.playerTwoName = self.msWinner
+            }
+            else if gameManager.getTurn() == GameManager.Turn.playerTwo {
+                destinationVC?.playerOneName = self.msWinner
+                destinationVC?.playerTwoName = self.msLoser
+            }
+            else {
+                print("Error: GameManager not set correctly")
+            }
+        default:
+            print("No preparation needed for this segue")
+        }
+    }
 }

@@ -28,12 +28,15 @@ class GameBoardVC: UIViewController {
     var playerTwoName = ""
     @IBOutlet weak var gameLabel: UILabel!
     
+    @IBOutlet weak var gameMessageLabel: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
         gameLabel?.text = "\(playerOneName) versus \(playerTwoName)"
         gameLabel.sizeToFit()
+        gameMessageLabel.text = "\(playerOneName) make a move!"
         gameManager.startGame(playerOneName: playerOneName, playerTwoName: playerTwoName)
         // Do any additional setup after loading the view.
+        print("GameBoard view is loaded")
     }
     
     @IBAction func buttonPressed(sender: AnyObject) {
@@ -43,7 +46,7 @@ class GameBoardVC: UIViewController {
 
         processButton(button: button)
         gameManager.recordTurn(positionIdx: button.tag)
-        if gameManager.checkOver() {
+        if gameManager.checkOver(anIndex: button.tag) {
             print("Game is over.")
             // winner must be the current player
             let lsWinner = gameManager.getTurn()
@@ -53,6 +56,12 @@ class GameBoardVC: UIViewController {
             return
         }
         gameManager.changeTurn()
+        if gameManager.getTurn() == GameManager.Turn.playerOne {
+            self.gameMessageLabel.text = "\(playerOneName) make a move!"
+        }
+        else {
+            self.gameMessageLabel.text = "\(playerTwoName) make a move!"
+        }
     }
     
     func processButton(button:UIButton) {
@@ -64,5 +73,12 @@ class GameBoardVC: UIViewController {
         }
         button.setTitleColor(UIColor.white, for: .normal)
         button.isEnabled = false
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as? GameOverVC
+        destinationVC?.msWinner = gameManager.winner
+        destinationVC?.msLoser = gameManager.loser
+        destinationVC?.gameManager = self.gameManager
     }
 }
